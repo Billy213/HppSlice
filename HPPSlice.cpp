@@ -9,8 +9,6 @@ HppSlice::HppSlice( std::string hpp_path )
 		_cpp_name = hpp_path.substr(0,index) + ".cpp" ;
 	else 
 		_cpp_name = hpp_path+".cpp";
-
-	
 }
 void HppSlice::SliceInit()
 {
@@ -35,8 +33,8 @@ void HppSlice::SliceInit()
 
 	_in.open( _tmp_name );
 	_out_h.open(_hpp_name);
-	_out_cpp.open(_cpp_name);
-	if(!_in || !_out_h || !_out_cpp )
+	
+	if(!_in || !_out_h )
 	{
 		std::cerr << "文件打开失败\n";
 		std::cerr << "file:" << __FILE__ << "line:" << __LINE__ << 
@@ -47,7 +45,19 @@ void HppSlice::SliceInit()
 	string file_name;
 	int index = _hpp_name.find_last_of("\\/");
 	file_name = _hpp_name.substr(index+1);
-	_out_cpp << "#include\"" << file_name << "\"" << endl;
+	
+	ifstream in(_cpp_name);
+	// 如果源文件已经存在则不写入：#include 
+	if( in )
+	{
+		in.close();
+		_out_cpp.open(_cpp_name, ios::app );
+	}
+	else
+	{
+		_out_cpp.open(_cpp_name, ios::app );
+		_out_cpp << "#include\"" << file_name << "\"" << endl;
+	}
 }
 void  HppSlice::Slice()
 {
@@ -104,7 +114,7 @@ void  HppSlice::FunSlice()
 	_decl.clear();
 	_impl.clear();
 
-	int c = _in.get();
+	int c;// = _in.get();
 	skipSpace(c);
 	string name = skipSpaceNote(c);	// 把注释看成是 name 的一部分
 	while(c!=EOF)
