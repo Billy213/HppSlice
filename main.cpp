@@ -1,6 +1,8 @@
 #include "HPPSlice.h"
-#include "FindFile.h"
+#include <m_findfile.h>
 #include <vector>
+#include <functional>
+
 using namespace std;
 // 命令行参数：
 // -b {dir/filename }|dir/* 恢复指定文件或指定文件夹下的文件，可以使用通配符
@@ -39,7 +41,8 @@ int main( int argc, char** argv )
 			files_tmp.push_back(name);
 		}
 	}
-	files = files_tmp;
+	copy( files_tmp.begin(), files_tmp.end(), back_inserter( files ) );
+
 
 	if( "-b" == com )
 	{
@@ -65,4 +68,3 @@ int main( int argc, char** argv )
 	cout << "successed!\n";
 
 }
-
